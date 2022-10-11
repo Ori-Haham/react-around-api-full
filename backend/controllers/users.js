@@ -1,5 +1,47 @@
+const bcrypt = require('bcryptjs');
+
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 const errorHandler = require('../error/errorHandler');
+
+module.exports.postNewUser = (req, res) => {
+  const { email, password, name, about, avatar } = req.body;
+
+  bcrypt
+    .hash(password, 10)
+    .then((hash) =>
+      User.create({
+        email,
+        password: hash,
+        name,
+        about,
+        avatar,
+      })
+    )
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      errorHandler(err, req, res);
+    });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // we're creating a token
+      const token = jwt.sign({ token: user._id }, 'some-secret-key', {
+        expiresIn: '7d',
+      });
+
+      // we return the token
+      res.send({ token });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -21,16 +63,6 @@ module.exports.getUserById = (req, res) => {
       error.statusCode = 404;
       throw error;
     })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      errorHandler(err, req, res);
-    });
-};
-
-module.exports.postNewUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar }, { runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       errorHandler(err, req, res);
