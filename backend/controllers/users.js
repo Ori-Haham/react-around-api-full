@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const errorHandler = require('../error/errorHandler');
+const NotFoundError = require('../errors/notFoundErr');
 
 module.exports.postNewUser = (req, res) => {
   const { email, password, name, about, avatar } = req.body;
@@ -30,12 +30,9 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // we're creating a token
       const token = jwt.sign({ token: user._id }, 'some-secret-key', {
         expiresIn: '7d',
       });
-
-      // we return the token
       res.send({ token });
     })
     .catch((err) => {
@@ -43,30 +40,22 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .orFail(() => {
-      const error = new Error('No card found with that id');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('No users found');
     })
     .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      errorHandler(err, req, res);
-    });
+    .catch(next);
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => {
-      const error = new Error('No card found with that id');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('No user found');
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      errorHandler(err, req, res);
-    });
+    .catch(next);
 };
 
 module.exports.updateProfile = (req, res) => {
