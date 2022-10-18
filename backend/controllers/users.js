@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const errorHandler = require('../errors/errorHandler');
 const NotFoundError = require('../errors/notFoundErr');
 
 module.exports.postNewUser = (req, res) => {

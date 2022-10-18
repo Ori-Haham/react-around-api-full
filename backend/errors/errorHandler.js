@@ -1,15 +1,15 @@
-// const errorHandler = (err, req, res) => {
-//   if (err.name === 'CastError' || 'ValidationError') {
-//     res.status(400).send(err);
-//     return;
-//   }
-//   if (err.statusCode === 404) {
-//     res.status(404).send(err);
-//     return;
-//   }
+const errorHandler = (err, req, res) => {
+  if (err.name === 'CastError' || 'ValidationError') {
+    res.status(400).send(err);
+    return;
+  }
+  if (err.statusCode === 404) {
+    res.status(404).send(err);
+    return;
+  }
 
-//   res.status(500).send({ message: err });
-// };
+  res.status(500).send({ message: err });
+};
 
 // class BadRequestError extends Error {
 //   constructor(message) {
@@ -32,16 +32,8 @@
 //   }
 // }
 
-class NotFoundError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 404;
-  }
-}
-module.exports = NotFoundError;
-
 // module.exports = UnauthorizedError;
 
 // module.exports = ForbiddenError;
 
-// module.exports = errorHandler;
+module.exports = errorHandler;
