@@ -19,7 +19,7 @@
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && scp -r ./build/* ori.haham100@d.students.nomoredomainssbs.ru:/home/practicumuser/react-around-api-full/frontend"
+    "deploy": "npm run build && scp -r ./build/* ori.haham100@students.nomoredomainssbs.ru:/home/practicumuser/react-around-api-full/frontend"
   },
   "eslintConfig": {
     "extends": [
