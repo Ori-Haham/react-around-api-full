@@ -13,7 +13,7 @@ module.exports.postNewCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((user) => {
-      res.send({ data: name, link });
+      res.send({ data: name });
     })
     .catch(next);
 };
