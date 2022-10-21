@@ -1,9 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-require('dotenv').config();
-const { errors } = require('celebrate');
-const { requestLogger, errorLogger } = require('./middleware/logger');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -13,12 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
-const auth = require('./middleware/auth');
-
-const usersRoute = require('./routes/users');
 const cardsRoute = require('./routes/cards');
-
-app.use(requestLogger);
+const usersRoute = require('./routes/users');
 
 app.use((req, res, next) => {
   req.user = {
@@ -28,16 +21,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', usersRoute);
-// app.use(auth);
 app.use('/', cardsRoute);
+app.use('/', usersRoute);
 
-app.use(errorLogger);
-
-app.use(errors());
-
-app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
+app.all('*', (req, res) => {
+  res.status(404).send({ message: 'Requested resource not found' });
 });
 
 app.listen(PORT, () => {
