@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundErr');
-const errorHandler = require('../error/errorHandler');
+const errorHandler = require('../errors/errorHandler');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -12,14 +12,26 @@ module.exports.getCards = (req, res) => {
 
 module.exports.postNewCard = (req, res) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id }, function (error) {
-    console.log(error);
-  })
-    .then((user) => res.send({ data: user }))
+  Card.create({ name, link, owner: req.user._id })
+    .then((user) => {
+      try {
+        res.send({ data: user });
+      } catch (err) {
+        // const err = new Error('error');
+        // err.statusCode = 401;
+        res.send(err);
+        next(err);
+      }
+    })
     .catch((err) => {
-      errorHandler(err, req, res);
+      res.send({ data: err });
     });
 };
+
+// .then((user) => res.send({ data: user }))
+// .catch((err) => {
+//   errorHandler(err, req, res);
+// });
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
