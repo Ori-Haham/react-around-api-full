@@ -4,10 +4,14 @@ const errorHandler = require('../errors/errorHandler');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      res.send('ori');
-    });
+    .then((users) => {
+      if (!users) {
+        throw new NotFoundError('No users found');
+      }
+      res.send(users);
+    })
+
+    .catch(next);
 };
 
 module.exports.postNewCard = (req, res) => {
@@ -17,8 +21,6 @@ module.exports.postNewCard = (req, res) => {
       try {
         res.send({ data: user });
       } catch (err) {
-        // const err = new Error('error');
-        // err.statusCode = 401;
         res.send(err);
         next(err);
       }
@@ -28,17 +30,12 @@ module.exports.postNewCard = (req, res) => {
     });
 };
 
-// .then((user) => res.send({ data: user }))
-// .catch((err) => {
-//   errorHandler(err, req, res);
-// });
-
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      throw new NotFoundError('No user with matching ID found');
+      throw new NotFoundError('No card with matching ID found');
     })
-    .then((user) => res.send({ data: user }))
+    .then((card) => res.send({ card }))
     .catch(next);
 };
 
@@ -48,12 +45,10 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('No card with matching ID found');
-      }
-      res.send({ data: user });
+    .orFail(() => {
+      throw new NotFoundError('No card with matching ID found');
     })
+    .then((card) => res.send({ card }))
     .catch(next);
 };
 
@@ -63,11 +58,9 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('No card with matching ID found');
-      }
-      res.send({ data: user });
+    .orFail(() => {
+      throw new NotFoundError('No card with matching ID found');
     })
+    .then((card) => res.send({ card }))
     .catch(next);
 };
