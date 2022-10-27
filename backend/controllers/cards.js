@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundErr');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((users) => {
       if (!users) {
@@ -25,7 +25,7 @@ module.exports.postNewCard = (req, res) => {
       }
     })
     .catch((err) => {
-      res.send({ data: err });
+      res.send({ err });
     });
 };
 

@@ -15,6 +15,9 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const auth = require('./middleware/auth');
 
+const router = require('express').Router();
+
+const { postNewUser, login } = require('./controllers/users');
 const usersRoute = require('./routes/users');
 const cardsRoute = require('./routes/cards');
 
@@ -28,8 +31,14 @@ app.use((req, res, next) => {
   next();
 });
 
+router.post('/signup', postNewUser);
+
+router.post('/signin', login);
+
+app.use(auth);
+
 app.use('/', usersRoute);
-// app.use(auth);
+
 app.use('/', cardsRoute);
 
 app.use(errorLogger);

@@ -42,12 +42,21 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
+// module.exports.getUser = (req, res, next) => {
+//   User.find({})
+//     .orFail(() => {
+//       throw new NotFoundError('No users found');
+//     })
+//     .then((users) => res.send({ users }))
+//     .catch(next);
+// };
+
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .orFail(() => {
       throw new NotFoundError('No users found');
     })
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send({ users }))
     .catch(next);
 };
 
