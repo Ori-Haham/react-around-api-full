@@ -23,13 +23,13 @@ const cardsRoute = require('./routes/cards');
 
 app.use(requestLogger);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '631891ecb356df50d50a532e',
-  };
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '631891ecb356df50d50a532e',
+//   };
 
-  next();
-});
+//   next();
+// });
 
 router.post('/signup', postNewUser);
 
