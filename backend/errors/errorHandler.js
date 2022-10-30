@@ -1,6 +1,6 @@
 const errorHandler = (err, req, res) => {
   if (err.name === 'CastError' || 'ValidationError') {
-    res.status(400).send(err);
+    res.status(401).send(err);
     return;
   }
   if (err.statusCode === 404) {

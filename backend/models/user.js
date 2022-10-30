@@ -7,18 +7,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true,
+    default: 'Jacques Cousteau',
   },
 
   about: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true,
+    default: 'Explorer',
   },
   avatar: {
     type: String,
-    required: true,
+    default:
+      'https://images.pexels.com/photos/296282/pexels-photo-296282.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     validate: {
       validator: function validatorFunction(v) {
         return /https?:\/\/(www\.)?\S+\.com(\S+)?/i.test(v);
@@ -65,3 +66,4 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
 };
 
 module.exports = mongoose.model('user', userSchema);
+

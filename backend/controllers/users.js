@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
 
@@ -20,18 +21,18 @@ module.exports.postNewUser = (req, res) => {
         avatar,
       })
     )
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       errorHandler(err, req, res);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ token: user._id }, 'some-secret-key', {
+      const token = jwt.sign({ token: user._id }, process.env.JWT_SECRET, {
         expiresIn: '7d',
       });
       res.send({ token });
@@ -41,16 +42,20 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
+module.exports.getUser = (req, res, next) => {
+  if (!req.user) {
+    throw new NotFoundError('No users found');
+  }
+  const userId = req.user.token;
+  User.findById(userId)
     .orFail(() => {
       throw new NotFoundError('No users found');
     })
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send({ users }))
     .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
       throw new NotFoundError('No user found');
@@ -59,7 +64,17 @@ module.exports.getUserById = (req, res) => {
     .catch(next);
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
+    .orFail(() => {
+      throw new NotFoundError('No users found');
+    })
+    .then((users) => res.send({ users }))
+    .catch(next);
+};
+
+
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
@@ -67,13 +82,14 @@ module.exports.updateProfile = (req, res) => {
     { name, about },
     { runValidators: true, new: true }
   )
+    .orFail(() => {
+      throw new NotFoundError('No user found');
+    })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      errorHandler(err, req, res);
-    });
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -81,8 +97,10 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { runValidators: true, new: true }
   )
+    .orFail(() => {
+      throw new NotFoundError('No user found');
+    })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      errorHandler(err, req, res);
-    });
+    .catch(next);
 };
+

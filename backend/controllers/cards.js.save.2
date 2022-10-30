@@ -1,16 +1,13 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundErr');
+const errorHandler = require('../errors/errorHandler');
 
-module.exports.getCards = (req, res, next) => {
+module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((users) => {
-      if (!users) {
-        throw new NotFoundError('No users found');
-      }
-      res.send(users);
-    })
-
-    .catch(next);
+    .then((users) => res.send({ data: users }))
+    .catch((err) => {
+      res.send('ori');
+    });
 };
 
 module.exports.postNewCard = (req, res) => {
@@ -18,23 +15,25 @@ module.exports.postNewCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((user) => {
       try {
-        res.send({ data: user });
-      } catch (err) {
+        res.send({ data: name, link, owner });
+      } catch(err) {
+        const err = new Error('error');
+        err.statusCode = 401;
         res.send(err);
         next(err);
       }
     })
     .catch((err) => {
-      res.send({ err });
+      res.send({ data: err });
     });
 };
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      throw new NotFoundError('No card with matching ID found');
+      throw new NotFoundError('No user with matching ID found');
     })
-    .then((card) => res.send({ card }))
+    .then((user) => res.send({ data: user }))
     .catch(next);
 };
 
@@ -44,10 +43,12 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(() => {
-      throw new NotFoundError('No card with matching ID found');
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('No card with matching ID found');
+      }
+      res.send({ data: user });
     })
-    .then((card) => res.send({ card }))
     .catch(next);
 };
 
@@ -57,10 +58,11 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(() => {
-      throw new NotFoundError('No card with matching ID found');
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('No card with matching ID found');
+      }
+      res.send({ data: user });
     })
-    .then((card) => res.send({ card }))
     .catch(next);
 };
-
