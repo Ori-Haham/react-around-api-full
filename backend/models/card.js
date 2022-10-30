@@ -25,7 +25,7 @@ const cardSchema = new mongoose.Schema({
   },
   likes: {
     type: Object,
-    default: {},
+    default: [],
   },
 });
 
