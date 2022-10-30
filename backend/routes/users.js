@@ -8,6 +8,7 @@ const {
 
 router.get('/users', getUsers);
 
+
 // router.get('/users/:id', getUserById);
 
 router.get('/users/me', getUser);

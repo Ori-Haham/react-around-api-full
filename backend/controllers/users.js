@@ -51,6 +51,15 @@ module.exports.getUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundError('No users found');
     })
+    .then((user) => res.send({ user }))
+    .catch(next);
+};
+
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
+    .orFail(() => {
+      throw new NotFoundError('No users found');
+    })
     .then((users) => res.send({ users }))
     .catch(next);
 };

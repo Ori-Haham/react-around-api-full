@@ -3,11 +3,11 @@ const NotFoundError = require('../errors/notFoundErr');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((users) => {
-      if (!users) {
+    .then((cards) => {
+      if (!cards) {
         throw new NotFoundError('No users found');
       }
-      res.send(users);
+      res.send(cards);
     })
 
     .catch(next);
