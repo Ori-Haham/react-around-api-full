@@ -1,39 +1,32 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-require('dotenv').config();
+var cors = require('cors');
+
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middleware/logger');
-
 const { PORT = 3000 } = process.env;
 const app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const auth = require('./middleware/auth');
 
-const router = require('express').Router();
-
 const { postNewUser, login } = require('./controllers/users');
 const usersRoute = require('./routes/users');
 const cardsRoute = require('./routes/cards');
 
+app.use(cors());
+app.options('*', cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(requestLogger);
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '631891ecb356df50d50a532e',
-//   };
+app.post('/signup', postNewUser);
 
-//   next();
-// });
-
-router.post('/signup', postNewUser);
-
-router.post('/signin', login);
+app.post('/signin', login);
 
 app.use(auth);
 

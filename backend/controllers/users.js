@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
 
@@ -30,26 +31,29 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
-    .orFail(() => {
-      throw new NotFoundError('Email or password are incorect');
-    })
     .then((user) => {
-      const token = jwt.sign({ token: user._id }, 'some-secret-key', {
+      const token = jwt.sign({ token: user._id }, process.env.JWT_SECRET, {
         expiresIn: '7d',
       });
       res.send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
 };
 
-// module.exports.getUser = (req, res, next) => {
-//   User.find({})
-//     .orFail(() => {
-//       throw new NotFoundError('No users found');
-//     })
-//     .then((users) => res.send({ users }))
-//     .catch(next);
-// };
+module.exports.getUser = (req, res, next) => {
+  if (!req.user) {
+    throw new NotFoundError('No users found');
+  }
+  const userId = req.user.token;
+  User.findById(userId)
+    .orFail(() => {
+      throw new NotFoundError('No users found');
+    })
+    .then((users) => res.send({ users }))
+    .catch(next);
+};
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
