@@ -15,12 +15,11 @@ module.exports.getCards = (req, res, next) => {
 
 module.exports.postNewCard = (req, res) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((user) => {
+  Card.create({ name, link, owner: req.user.token })
+    .then((card) => {
       try {
-        res.send({ data: user });
+        res.send({ card });
       } catch (err) {
-        res.send(err);
         next(err);
       }
     })
@@ -41,7 +40,7 @@ module.exports.deleteCard = (req, res, next) => {
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: req.user.token } },
     { new: true }
   )
     .orFail(() => {
@@ -51,10 +50,10 @@ module.exports.likeCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: req.user.token } },
     { new: true }
   )
     .orFail(() => {
