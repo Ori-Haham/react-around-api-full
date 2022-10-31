@@ -7,7 +7,7 @@ module.exports.getCards = (req, res, next) => {
       if (!cards) {
         throw new NotFoundError('No users found');
       }
-      res.send(users);
+      res.send(cards);
     })
 
     .catch(next);

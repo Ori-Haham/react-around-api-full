@@ -64,16 +64,6 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-// module.exports.getUserById = (req, res, next) => {
-//   User.findById(req.params.id)
-//     .orFail(() => {
-//       throw new NotFoundError('No user found');
-
-//     })
-//     .then((user) => res.send({ data: user }))
-//     .catch(next);
-// };
-
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
