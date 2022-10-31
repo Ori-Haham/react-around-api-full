@@ -64,52 +64,30 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserById = (req, res, next) => {
-  User.findById(req.params.id)
-    .orFail(() => {
-      throw new NotFoundError('No user found');
-    })
-    .then((user) => res.send({ data: user }))
-    .catch(next);
-};
-
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .orFail(() => {
-      throw new NotFoundError('No users found');
-    })
-    .then((users) => res.send({ users }))
-    .catch(next);
-};
-
-
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, about },
-    { runValidators: true, new: true }
-  )
+  User.findByIdAndUpdate(req.user.token, { name, about }, { new: true })
     .orFail(() => {
       throw new NotFoundError('No user found');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch(next);
 };
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-
   User.findByIdAndUpdate(
-    req.user._id,
+    req.user.token,
     { avatar },
     { runValidators: true, new: true }
   )
     .orFail(() => {
       throw new NotFoundError('No user found');
     })
-    .then((user) => res.send({ data: user }))
-    .catch(next);
+    .then((user) => res.send({ user }))
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 };
-

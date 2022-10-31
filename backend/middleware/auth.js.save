@@ -13,7 +13,9 @@ module.exports = (req, res, next) => {
 
   try {
     payload = jwt.verify(token, process.env.JWT_SECRET);
+
   } catch (err) {
+    console.log(2, payload);
     console.log(err);
     return res.status(401).send({ message: 'Authorization Required 2' });
   }

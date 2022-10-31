@@ -37,13 +37,14 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
+module.exports.likeCard = (req, res, next) => { 
+Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user.token } },
     { new: true }
   )
     .orFail(() => {
+      console.log(req.user.token)
       throw new NotFoundError('No card with matching ID found');
     })
     .then((card) => res.send({ card }))
@@ -62,3 +63,4 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => res.send({ card }))
     .catch(next);
 };
+
