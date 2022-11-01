@@ -7,4 +7,5 @@ The API of "Around the U.S." with authorization and registration handled by the 
 This repository contains the full API of "Around the U.S." project that features user authorization and user registration and handles cards and users. Please add to this readme:
 
 - Link to Github repository with the complete application : https://github.com/Ori-Haham/react-around-api-full
-- link to the website : https://aroundori.students.nomoredomainssbs.ru
+- Link to the website : https://aroundori.students.nomoredomainssbs.ru
+- Link to the api : https://api.aroundori.students.nomoredomainssbs.ru
