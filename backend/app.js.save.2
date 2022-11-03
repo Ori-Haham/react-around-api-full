@@ -11,7 +11,9 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const auth = require('./middleware/auth');
 
+console.log(1);
 const { postNewUser, login } = require('./controllers/users');
+console.log(2);
 const usersRoute = require('./routes/users');
 const cardsRoute = require('./routes/cards');
 
