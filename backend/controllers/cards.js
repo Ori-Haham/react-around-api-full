@@ -35,15 +35,14 @@ module.exports.postNewCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  if (req.param.cardId !== req.user.token) {
-    throw new noPermissionError(
-      'Forbiden : you have no permission to delete this card'
-    );
-  }
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('No card with matching ID found');
+      } else if (card.owner != req.user.token) {
+        throw new noPermissionError(
+          'Forbiden : you have no permission to delete this card'
+        );
       }
       res.send({ card });
     })
@@ -79,3 +78,4 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch(next);
 };
+
