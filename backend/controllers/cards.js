@@ -1,11 +1,13 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundErr');
+const BadRequestError = require('../errors/BadRequestError');
+const noPermissionError = require('../errors/noPermissionError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('No users found');
+        throw new NotFoundError('No cards found');
       }
       res.send(cards);
     })
@@ -13,7 +15,7 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.postNewCard = (req, res) => {
+module.exports.postNewCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user.token })
     .then((card) => {
@@ -24,16 +26,27 @@ module.exports.postNewCard = (req, res) => {
       }
     })
     .catch((err) => {
-      res.send({ err });
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Validation error'));
+      } else {
+        next(err);
+      }
     });
 };
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-      throw new NotFoundError('No card with matching ID found');
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('No card with matching ID found');
+      } else if (card.owner != req.user.token) {
+        console.log(card.owner, req.user.token);
+        throw new noPermissionError(
+          'Forbiden : you have no permission to delete this card'
+        );
+      }
+      res.send({ card });
     })
-    .then((card) => res.send({ card }))
     .catch(next);
 };
 
@@ -43,10 +56,12 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user.token } },
     { new: true }
   )
-    .orFail(() => {
-      throw new NotFoundError('No card with matching ID found');
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('No card with matching ID found');
+      }
+      res.send({ card });
     })
-    .then((card) => res.send({ card }))
     .catch(next);
 };
 
@@ -56,9 +71,11 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user.token } },
     { new: true }
   )
-    .orFail(() => {
-      throw new NotFoundError('No card with matching ID found');
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('No card with matching ID found');
+      }
+      res.send({ card });
     })
-    .then((card) => res.send({ card }))
     .catch(next);
 };
