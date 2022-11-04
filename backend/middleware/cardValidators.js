@@ -19,7 +19,11 @@ const cardValidator = celebrate({
 
 const cardIdValidator = celebrate({
   [Segments.PARAMS]: Joi.object().keys({
+<<<<<<< HEAD
     cardId: Joi.string().hex().min(24).max(24).required(),
+=======
+    cardId: Joi.string().hex().length(24).required(),
+>>>>>>> de83f149635fad1b97e09d8813d2ac13d9ade748
   }),
 });
 

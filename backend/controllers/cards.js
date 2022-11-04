@@ -40,7 +40,6 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('No card with matching ID found');
       } else if (card.owner != req.user.token) {
-        console.log(card.owner, req.user.token);
         throw new noPermissionError(
           'Forbiden : you have no permission to delete this card'
         );
