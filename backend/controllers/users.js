@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-const jwtSecretKey = process.env.JWT_SECRET;
+const {
+  JWT_SECRET = `a2e26defa95b258d32e23b7ab99bffe67a46a7c9fa280e1cbabd9082f11865751343f7b2866d29c54c24353a94676ed49a495a51540395cfc48
+707ce21461dfd`,
+} = process.env;
 
 const jwt = require('jsonwebtoken');
 
@@ -43,7 +46,7 @@ module.exports.login = (req, res, next) => {
       if (!user) {
         throw new unauthorizedError('Invalid email or password');
       }
-      const token = jwt.sign({ token: user._id }, jwtSecretKey, {
+      const token = jwt.sign({ token: user._id }, JWT_SECRET, {
         expiresIn: '7d',
       });
       res.send({ token });
