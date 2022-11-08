@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { celebrate, Joi } = require('celebrate');
+=======
+const { celebrate, Joi} = require('celebrate');
+>>>>>>> 88d729aa1bea0663bc2c193a3052c12e593376c1
 
 const validator = require('validator');
 
