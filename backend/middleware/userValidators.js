@@ -28,8 +28,15 @@ const updateUserDataVlidator = celebrate({
   }),
 });
 
+const userIdValidator = celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    userId: Joi.string().hex().length(24).required(),
+  }),
+});
+
 module.exports = {
   userCredentialsValidator,
   updateUserDataVlidator,
   avatarValidator,
+  userIdValidator,
 };
