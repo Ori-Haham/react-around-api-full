@@ -31,6 +31,7 @@ module.exports.postNewUser = (req, res, next) => {
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
+<<<<<<< HEAD
  	   next(new BadRequestError('Validation error'));
  	 } else if (err.name === 'MongoServerError') {
    	 next(new conflictError('This email already exist'));
@@ -38,6 +39,15 @@ module.exports.postNewUser = (req, res, next) => {
  	   console.log(err);
     	next(err);
   }
+=======
+          next(new BadRequestError('Validation error'));
+        } else if (err.name === 'MongoServerError') {
+          next(new conflictError('This email already exist'));
+        } else {
+          console.log(err);
+          next(err);
+        }
+>>>>>>> 2a43da9cc25ec1a690eead6feef77ec866445179
       })
   );
 };
