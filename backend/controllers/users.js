@@ -31,6 +31,15 @@ module.exports.postNewUser = (req, res, next) => {
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
+<<<<<<< HEAD
+          next(new BadRequestError('Validation error'));
+        } else if (err.name === 'MongoServerError') {
+          next(new conflictError('This email already exist'));
+        } else {
+          console.log(err);
+          next(err);
+        }
+=======
  	   next(new BadRequestError('Validation error'));
  	 } else if (err.name === 'MongoServerError') {
    	 next(new conflictError('This email already exist'));
@@ -38,6 +47,7 @@ module.exports.postNewUser = (req, res, next) => {
  	   console.log(err);
     	next(err);
   }
+>>>>>>> 88d729aa1bea0663bc2c193a3052c12e593376c1
       })
   );
 };
@@ -81,7 +91,11 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res) => {
+<<<<<<< HEAD
+  User.findById(req.params.UserId)
+=======
   User.findById(req.params.userId)
+>>>>>>> 88d729aa1bea0663bc2c193a3052c12e593376c1
     .orFail(() => {
       throw new NotFoundError(`card doesn't exist`);
     })
