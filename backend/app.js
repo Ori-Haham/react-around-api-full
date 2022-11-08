@@ -20,7 +20,6 @@ const cardsRoute = require('./routes/cards');
 app.use(cors());
 app.options('*', cors());
 
-console.log(1);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -30,11 +29,9 @@ app.post('/signup', userCredentialsValidator, postNewUser);
 
 app.post('/signin', userCredentialsValidator, login);
 
-console.log(2);
 app.use(auth);
 
 app.use('/', usersRoute);
-console.log(3);
 app.use('/', cardsRoute);
 
 app.use('*', function (req, res) {
@@ -44,7 +41,7 @@ app.use('*', function (req, res) {
 app.use(errorLogger);
 
 app.use(errors());
-console.log(4);
+
 app.use((err, req, res, next) => {
   console.log(err);
   const { statusCode = 500, message } = err;
@@ -52,7 +49,6 @@ app.use((err, req, res, next) => {
     message: statusCode === 500 ? 'An error occurred on the server' : message,
   });
 });
-console.log(5);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
