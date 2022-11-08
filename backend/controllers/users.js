@@ -8,13 +8,12 @@ const {
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const errorHandler = require('../errors/errorHandler');
 const NotFoundError = require('../errors/notFoundErr');
 const unauthorizedError = require('../errors/unauthorizedError');
 const BadRequestError = require('../errors/BadRequestError');
 const conflictError = require('../errors/conflictError');
 
-module.exports.postNewUser = (req, res, next) => {
+mmodule.exports.postNewUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
 
   bcrypt.hash(password, 10).then((hash) =>
@@ -31,15 +30,6 @@ module.exports.postNewUser = (req, res, next) => {
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
-<<<<<<< HEAD
- 	   next(new BadRequestError('Validation error'));
- 	 } else if (err.name === 'MongoServerError') {
-   	 next(new conflictError('This email already exist'));
-	  } else {
- 	   console.log(err);
-    	next(err);
-  }
-=======
           next(new BadRequestError('Validation error'));
         } else if (err.name === 'MongoServerError') {
           next(new conflictError('This email already exist'));
@@ -47,7 +37,6 @@ module.exports.postNewUser = (req, res, next) => {
           console.log(err);
           next(err);
         }
->>>>>>> 2a43da9cc25ec1a690eead6feef77ec866445179
       })
   );
 };
