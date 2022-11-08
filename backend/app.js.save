@@ -37,8 +37,8 @@ app.use('/', usersRoute);
 console.log(3);
 app.use('/', cardsRoute);
 
-app.use('*', function (req, res) {
-  res.status(404).send({ message: 'The requested resource was not found' });
+app.get('*', function (req, res) {
+  send(new notFoundErr('The requested resource was not found'));
 });
 
 app.use(errorLogger);

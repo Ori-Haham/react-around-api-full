@@ -12,6 +12,7 @@ const errorHandler = require('../errors/errorHandler');
 const NotFoundError = require('../errors/notFoundErr');
 const unauthorizedError = require('../errors/unauthorizedError');
 const BadRequestError = require('../errors/BadRequestError');
+const conflictError = require('../errors/conflictError');
 
 module.exports.postNewUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
@@ -30,10 +31,13 @@ module.exports.postNewUser = (req, res, next) => {
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          next(new BadRequestError('Validation error'));
-        } else {
-          next(err);
-        }
+ 	   next(new BadRequestError('Validation error'));
+ 	 } else if (err.name === 'MongoServerError') {
+   	 next(new conflictError('This email already exist'));
+	  } else {
+ 	   console.log(err);
+    	next(err);
+  }
       })
   );
 };
@@ -54,6 +58,15 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
+    .orFail(() => {
+      throw new NotFoundError('No users found');
+    })
+    .then((users) => res.send({ users }))
+    .catch(next);
+};
+
 module.exports.getUser = (req, res, next) => {
   if (!req.user) {
     throw new NotFoundError('No users found');
@@ -67,13 +80,19 @@ module.exports.getUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
+module.exports.getUserById = (req, res) => {
+  User.findById(req.params.userId)
     .orFail(() => {
-      throw new NotFoundError('No users found');
+      throw new NotFoundError(`card doesn't exist`);
     })
-    .then((users) => res.send({ users }))
-    .catch(next);
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Validation error'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.updateProfile = (req, res, next) => {
