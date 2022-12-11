@@ -13,7 +13,7 @@ const unauthorizedError = require('../errors/unauthorizedError');
 const BadRequestError = require('../errors/BadRequestError');
 const conflictError = require('../errors/conflictError');
 
-mmodule.exports.postNewUser = (req, res, next) => {
+module.exports.postNewUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
 
   bcrypt.hash(password, 10).then((hash) =>

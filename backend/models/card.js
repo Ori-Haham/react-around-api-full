@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const BadRequestError = require('../errors/BadRequestError');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -28,12 +27,5 @@ const cardSchema = new mongoose.Schema({
     default: [],
   },
 });
-
-// cardSchema.path('name').validate(function (v) {
-//   if (v.length < 2) {
-//     throw new Error('<2');
-//   }
-//   return true;
-// }, 'Name `{VALUE}` is not valid');
 
 module.exports = mongoose.model('card', cardSchema);
